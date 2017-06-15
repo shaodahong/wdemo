@@ -1,0 +1,2 @@
+# wdemo
+A webpack template
