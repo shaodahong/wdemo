@@ -1,0 +1,26 @@
+{
+  "name": "wdemo",
+  "version": "1.0.0",
+  "description": "A webpack template",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shaodahong/wdemo.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bugs": {
+    "url": "https://github.com/shaodahong/wdemo/issues"
+  },
+  "homepage": "https://github.com/shaodahong/wdemo#readme",
+  "keywords": [
+    "webpack",
+    "cli"
+  ],
+  "author": "shaodahong",
+  "license": "MIT",
+  "engines": {
+    "node": ">=4.0.0"
+  }
+}
