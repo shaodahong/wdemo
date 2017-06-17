@@ -16,7 +16,7 @@ spinner.start()
 
 rm('-rf', 'dist/');
 
-baseConfig.plugins.push(new UglifyJSPlugin())
+baseConfig.plugins.push(new Webpack.optimize.UglifyJsPlugin())
 
 Webpack(baseConfig, function (err, status) {
     spinner.stop()
