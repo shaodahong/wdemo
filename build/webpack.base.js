@@ -11,12 +11,12 @@ var isPro = process.env.NODE_ENV === 'production'
 */
 module.exports = {
     entry: {
-        index: './src/index.js',
+        index: ['./src/index.js'],
     },
     output: {
-        path: path.resolve(__dirname, '../dist/static/'),
-        publicPath: 'static/',
-        filename: 'js/[name].[hash:6].js'
+        path: path.resolve(__dirname, '../dist'),
+        publicPath: '',
+        filename: 'static/js/[name].[hash:6].js'
     },
     resolve: {
         extensions: ['*', '.js', '.json'],
@@ -50,8 +50,8 @@ module.exports = {
                 loader: "url-loader",
                 options: {
                     limit: 10000,
-                    name: 'images/[name].[hash:6].[ext]',
-                    publicPath: '../',
+                    name: 'static/images/[name].[hash:6].[ext]',
+                    publicPath: '../../',
                 }
             }
         }, {
@@ -59,20 +59,22 @@ module.exports = {
             use: {
                 loader: "file-loader",
                 options: {
-                    name: 'fonts/[name].[hash:6].[ext]',
-                    publicPath: '../',
+                    name: 'static/fonts/[name].[hash:6].[ext]',
+                    publicPath: '../../',
                 }
             }
         }]
     },
     plugins: [
         new HtmlWebpackPlugin({
-            filename: '../index.html',
+            filename: 'index.html',
             template: './src/index.html',
             inject: true,
             // chunks: [name, 'vendors'],
             // chunksSortMode: 'none' | 'auto' | 'dependency'
         }),
+        new Webpack.NoEmitOnErrorsPlugin(),
+        new Webpack.HotModuleReplacementPlugin(),
         new Webpack.optimize.CommonsChunkPlugin({
             name: ['vendor'],
             minChunks: ({
@@ -84,9 +86,15 @@ module.exports = {
             ),
         }),
         new ExtractTextPlugin({
-            filename: 'css/[name].[hash:6].css',
+            filename: 'static/css/[name].[hash:6].css',
+            allChunks: true,
             disable: isPro ? false : true
         })
         // new BundleAnalyzerPlugin(),
-    ]
+    ],
+    devServer: {
+        historyApiFallback: {
+            disableDotRule: true
+        }
+    },
 }

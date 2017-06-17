@@ -3,6 +3,7 @@ env.NODE_ENV = 'production'
 var ora = require('ora')
 var Webpack = require('webpack')
 var baseConfig = require('./webpack.base')
+var UglifyJSPlugin = require('uglifyjs-webpack-plugin')
 
 console.log(
     '  Tips:\n' +
@@ -14,6 +15,8 @@ var spinner = ora('building for production...')
 spinner.start()
 
 rm('-rf', 'dist/');
+
+baseConfig.plugins.push(new UglifyJSPlugin())
 
 Webpack(baseConfig, function (err, status) {
     spinner.stop()
