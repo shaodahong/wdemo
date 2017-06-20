@@ -89,8 +89,9 @@ module.exports = {
             filename: 'static/css/[name].[hash:6].css',
             allChunks: true,
             disable: isPro ? false : true
-        })
+        }),
         // new BundleAnalyzerPlugin(),
+        // new Webpack.optimize.ModuleConcatenationPlugin()
     ],
     devServer: {
         historyApiFallback: {
