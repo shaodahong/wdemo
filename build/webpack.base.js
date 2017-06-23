@@ -1,22 +1,23 @@
 var Webpack = require('webpack')
 var path = require('path')
+var glob = require('glob')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 var ExtractTextPlugin = require("extract-text-webpack-plugin")
+var ChunkManifestPlugin = require('chunk-manifest-webpack-plugin')
+var InlineManifestWebpackPlugin = require('inline-manifest-webpack-plugin')
 
 var isPro = process.env.NODE_ENV === 'production'
 
 /*
-    default config
+    base config
 */
-module.exports = {
-    entry: {
-        index: ['./src/index.js'],
-    },
+var baseConfig = {
+    entry: {},
     output: {
         path: path.resolve(__dirname, '../dist'),
         publicPath: '',
-        filename: 'static/js/[name].[hash:6].js'
+        filename: isPro ? 'static/js/[name].[chunkhash].js' : 'static/js/[name].js'
     },
     resolve: {
         extensions: ['*', '.js', '.json'],
@@ -31,14 +32,43 @@ module.exports = {
                     presets: ['es2015'],
                     plugins: ['transform-runtime']
                 }
-            }
-
+            },
         }, {
             test: /\.css$/,
             use: ExtractTextPlugin.extract({
                 fallback: "style-loader",
                 use: "css-loader"
             })
+        }, {
+            test: /\.json$/,
+            use: 'json-loader'
+        }, {
+            test: /\.styl/,
+            use: ExtractTextPlugin.extract({
+                fallback: 'style-loader',
+                use: [
+                    'css-loader',
+                    'stylus-loader'
+                ]
+            }),
+        }, {
+            test: /\.less/,
+            use: ExtractTextPlugin.extract({
+                fallback: 'style-loader',
+                use: [
+                    'css-loader',
+                    'less-loader'
+                ]
+            }),
+        }, {
+            test: /\.scss/,
+            use: ExtractTextPlugin.extract({
+                fallback: 'style-loader',
+                use: [
+                    'css-loader',
+                    'sass-loader'
+                ]
+            }),
         }, {
             test: /\.html$/,
             use: {
@@ -66,36 +96,100 @@ module.exports = {
         }]
     },
     plugins: [
-        new HtmlWebpackPlugin({
-            filename: 'index.html',
-            template: './src/index.html',
-            inject: true,
-            // chunks: [name, 'vendors'],
-            // chunksSortMode: 'none' | 'auto' | 'dependency'
-        }),
-        new Webpack.NoEmitOnErrorsPlugin(),
-        new Webpack.HotModuleReplacementPlugin(),
-        new Webpack.optimize.CommonsChunkPlugin({
-            name: ['vendor'],
-            minChunks: ({
-                resource
-            }) => (
-                resource &&
-                resource.indexOf('node_modules') >= 0 &&
-                resource.match(/\.js$/)
-            ),
-        }),
+        // new Webpack.NoEmitOnErrorsPlugin(),
         new ExtractTextPlugin({
-            filename: 'static/css/[name].[hash:6].css',
+            filename: 'static/css/[name].[contenthash].css',
             allChunks: true,
             disable: isPro ? false : true
-        }),
-        // new BundleAnalyzerPlugin(),
+        })
+        // new ChunkManifestPlugin({
+        //     filename: "chunk-manifest.json",
+        //     manifestVariable: "webpackManifest"
+        // })
+        // new BundleAnalyzerPlugin()
         // new Webpack.optimize.ModuleConcatenationPlugin()
-    ],
-    devServer: {
-        historyApiFallback: {
-            disableDotRule: true
-        }
-    },
+    ]
 }
+
+function getEntries(globPath) {
+    var files = glob.sync(globPath),
+        entries = {};
+
+    files.forEach(function (filepath) {
+        var split = filepath.split('/');
+        var name = split[split.length - 2];
+
+        entries[name] = filepath;
+    });
+
+    return entries;
+}
+
+var entries = getEntries('./src/pages/*/index.js');
+var hot = 'webpack-hot-middleware/client?reload=true';
+
+entries['index'] = './src/index.js'
+
+console.log('  entries', entries)
+
+var entriesLength = Object.keys(entries).length;
+
+// Single entry or multiple entry
+if (entriesLength === 1) {
+    Object.keys(entries).forEach(function (name) {
+        baseConfig.entry[name] = isPro ? entries[name] : [hot, entries[name]];
+        var htmlPlugin = new HtmlWebpackPlugin({
+            filename: name + '.html',
+            template: name === 'index' ? './src/index.html' : './src/pages/' + name + '/index.html',
+            inject: true,
+            chunks: [name, 'vendor', 'webpack_runtime'],
+            chunksSortMode: 'dependency'
+        });
+        baseConfig.plugins.push(htmlPlugin);
+    })
+    baseConfig.plugins.push(new Webpack.optimize.CommonsChunkPlugin({
+        name: ['vendor'],
+        minChunks: (module, count) => (
+            module.resource &&
+            module.resource.indexOf('node_modules') >= 0 &&
+            module.resource.match(/\.js$/)
+        )
+    }))
+} else {
+    Object.keys(entries).forEach(function (name) {
+        baseConfig.entry[name] = isPro ? entries[name] : [hot, entries[name]];
+        var htmlPlugin = new HtmlWebpackPlugin({
+            filename: name + '.html',
+            template: name === 'index' ? './src/index.html' : './src/pages/' + name + '/index.html',
+            inject: true,
+            chunks: [name, name + '.vendor', 'vendor', 'webpack_runtime'],
+            chunksSortMode: 'dependency'
+        });
+        var commonPlugin = new Webpack.optimize.CommonsChunkPlugin({
+            name: [name + '.vendor'],
+            chunks: [name],
+            minChunks: (module, count) => (
+                module.resource &&
+                module.resource.indexOf('node_modules') >= 0 &&
+                module.resource.match(/\.js$/) &&
+                count === 1
+            )
+        })
+        baseConfig.plugins.push(htmlPlugin, commonPlugin);
+    })
+    baseConfig.plugins.push(new Webpack.optimize.CommonsChunkPlugin({
+        name: ['vendor'],
+        minChunks: (module, count) => (
+            count >= 2
+        )
+    }))
+}
+
+baseConfig.plugins.push(new Webpack.optimize.CommonsChunkPlugin({
+    name: ['webpack_runtime'],
+    minChunks: Infinity
+}))
+baseConfig.plugins.push(new InlineManifestWebpackPlugin())
+
+
+module.exports = baseConfig;

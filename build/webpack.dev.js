@@ -2,13 +2,23 @@ var express = require('express');
 var path = require('path');
 var opn = require('opn');
 var Webpack = require('webpack');
+var merge = require('webpack-merge')
 var history = require('connect-history-api-fallback');
 var webpackMiddleware = require('webpack-dev-middleware');
 var webpackHotMiddleware = require('webpack-hot-middleware');
 
 var baseConfig = require('./webpack.base');
 
-baseConfig.entry.index.unshift('webpack-hot-middleware/client?reload=true')
+baseConfig = merge(baseConfig, {
+    plugins: [
+        new Webpack.HotModuleReplacementPlugin()
+    ],
+    devServer: {
+        historyApiFallback: {
+            disableDotRule: true
+        }
+    }
+})
 
 var port = 8080;
 
