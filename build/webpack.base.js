@@ -140,9 +140,9 @@ if (entriesLength === 1) {
         baseConfig.entry[name] = isPro ? entries[name] : [hot, entries[name]];
         var htmlPlugin = new HtmlWebpackPlugin({
             filename: name + '.html',
-            template: name === 'index' ? './src/index.html' : './src/pages/' + name + '/index.html',
+            template: name === 'index' ? './src/index.ejs' : './src/pages/' + name + '/index.html',
             inject: true,
-            chunks: [name, 'vendor', 'webpack_runtime'],
+            chunks: [name, 'vendor'],
             chunksSortMode: 'dependency'
         });
         baseConfig.plugins.push(htmlPlugin);
@@ -160,9 +160,9 @@ if (entriesLength === 1) {
         baseConfig.entry[name] = isPro ? entries[name] : [hot, entries[name]];
         var htmlPlugin = new HtmlWebpackPlugin({
             filename: name + '.html',
-            template: name === 'index' ? './src/index.html' : './src/pages/' + name + '/index.html',
+            template: name === 'index' ? './src/index.ejs' : './src/pages/' + name + '/index.html',
             inject: true,
-            chunks: [name, name + '.vendor', 'vendor', 'webpack_runtime'],
+            chunks: [name, name + '.vendor', 'vendor'],
             chunksSortMode: 'dependency'
         });
         var commonPlugin = new Webpack.optimize.CommonsChunkPlugin({
@@ -186,7 +186,7 @@ if (entriesLength === 1) {
 }
 
 baseConfig.plugins.push(new Webpack.optimize.CommonsChunkPlugin({
-    name: ['webpack_runtime'],
+    name: ['manifest'],
     minChunks: Infinity
 }))
 baseConfig.plugins.push(new InlineManifestWebpackPlugin())
