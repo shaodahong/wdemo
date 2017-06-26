@@ -1,2 +1,0 @@
-webpackJsonp([1],{iCOP:function(t,l){},lVK7:function(t,l,n){"use strict";function o(t){return t&&t.__esModule?t:{default:t}}n("iCOP");var e=n("/jXN"),u=o(e),a=n("mtWM"),c=o(a);console.log("angular",u.default),console.log("http",c.default)}},["lVK7"]);
-//# sourceMappingURL=index.3e9d960c2b8607d39929.js.map

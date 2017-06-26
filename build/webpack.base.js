@@ -6,6 +6,7 @@ var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlug
 var ExtractTextPlugin = require("extract-text-webpack-plugin")
 var ChunkManifestPlugin = require('chunk-manifest-webpack-plugin')
 var InlineManifestWebpackPlugin = require('inline-manifest-webpack-plugin')
+var HtmlWebpackInlineAssetsPlugin = require('html-webpack-inline-assets-plugin')
 
 var isPro = process.env.NODE_ENV === 'production'
 
@@ -96,21 +97,22 @@ var baseConfig = {
         }]
     },
     plugins: [
-        // new Webpack.NoEmitOnErrorsPlugin(),
         new ExtractTextPlugin({
             filename: 'static/css/[name].[contenthash].css',
             allChunks: true,
             disable: isPro ? false : true
         })
-        // new ChunkManifestPlugin({
-        //     filename: "chunk-manifest.json",
-        //     manifestVariable: "webpackManifest"
-        // })
         // new BundleAnalyzerPlugin()
         // new Webpack.optimize.ModuleConcatenationPlugin()
     ]
 }
 
+/**
+ * 
+ * 
+ * @param {string} globPath 
+ * @returns {object}
+ */
 function getEntries(globPath) {
     var files = glob.sync(globPath),
         entries = {};
@@ -140,10 +142,10 @@ if (entriesLength === 1) {
         baseConfig.entry[name] = isPro ? entries[name] : [hot, entries[name]];
         var htmlPlugin = new HtmlWebpackPlugin({
             filename: name + '.html',
-            template: name === 'index' ? './src/index.ejs' : './src/pages/' + name + '/index.html',
+            template: name === 'index' ? './src/index.html' : './src/pages/' + name + '/index.html',
             inject: true,
-            chunks: [name, 'vendor'],
-            chunksSortMode: 'dependency'
+            chunks: [name, 'vendor', 'manifest'],
+            chunksSortMode: 'dependency',
         });
         baseConfig.plugins.push(htmlPlugin);
     })
@@ -160,10 +162,10 @@ if (entriesLength === 1) {
         baseConfig.entry[name] = isPro ? entries[name] : [hot, entries[name]];
         var htmlPlugin = new HtmlWebpackPlugin({
             filename: name + '.html',
-            template: name === 'index' ? './src/index.ejs' : './src/pages/' + name + '/index.html',
+            template: name === 'index' ? './src/index.html' : './src/pages/' + name + '/index.html',
             inject: true,
-            chunks: [name, name + '.vendor', 'vendor'],
-            chunksSortMode: 'dependency'
+            chunks: [name, name + '.vendor', 'vendor', 'manifest'],
+            chunksSortMode: 'dependency',
         });
         var commonPlugin = new Webpack.optimize.CommonsChunkPlugin({
             name: [name + '.vendor'],
@@ -189,7 +191,10 @@ baseConfig.plugins.push(new Webpack.optimize.CommonsChunkPlugin({
     name: ['manifest'],
     minChunks: Infinity
 }))
-baseConfig.plugins.push(new InlineManifestWebpackPlugin())
+baseConfig.plugins.push(new HtmlWebpackInlineAssetsPlugin({
+    head: 'manifest.',
+    // body: 'manifest.'
+}))
 
 
 module.exports = baseConfig;
