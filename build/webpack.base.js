@@ -4,8 +4,6 @@ var glob = require('glob')
 var HtmlWebpackPlugin = require('html-webpack-plugin')
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 var ExtractTextPlugin = require("extract-text-webpack-plugin")
-var ChunkManifestPlugin = require('chunk-manifest-webpack-plugin')
-var InlineManifestWebpackPlugin = require('inline-manifest-webpack-plugin')
 var HtmlWebpackInlineAssetsPlugin = require('html-webpack-inline-assets-plugin')
 
 var isPro = process.env.NODE_ENV === 'production'

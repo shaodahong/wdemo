@@ -39,7 +39,9 @@ var middleware = webpackMiddleware(compiler, {
     }
 });
 app.use(middleware);
-app.use(webpackHotMiddleware(compiler));
+app.use(webpackHotMiddleware(compiler, {
+    heartbeat: 2000
+}));
 app.use(express.static(path.join(__dirname, '../dist/')));
 app.use(history());
 
