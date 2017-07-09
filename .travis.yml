@@ -1,0 +1,7 @@
+language: nodejs
+
+node_js:
+  -6.11.0
+
+script:
+  -npm run build

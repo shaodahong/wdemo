@@ -99,16 +99,16 @@ var baseConfig = {
             filename: 'static/css/[name].[contenthash].css',
             allChunks: true,
             disable: isPro ? false : true
-        })
-        // new BundleAnalyzerPlugin()
+        }),
+        new BundleAnalyzerPlugin()
         // new Webpack.optimize.ModuleConcatenationPlugin()
     ]
 }
 
 /**
- * 
- * 
- * @param {string} globPath 
+ *
+ *
+ * @param {string} globPath
  * @returns {object}
  */
 function getEntries(globPath) {
