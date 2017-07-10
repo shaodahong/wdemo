@@ -29,4 +29,3 @@ In build
 ```
 $ npm run build
 ```
-
