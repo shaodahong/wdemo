@@ -12,6 +12,7 @@ var baseConfig = require('./webpack.base');
 baseConfig = merge(baseConfig, {
     plugins: [
         new Webpack.HotModuleReplacementPlugin()
+        // new Webpack.NamedModulesPlugin()
     ],
     devServer: {
         historyApiFallback: {
@@ -42,7 +43,7 @@ app.use(middleware);
 app.use(webpackHotMiddleware(compiler, {
     heartbeat: 2000
 }));
-app.use(express.static(path.join(__dirname, '../dist/')));
+app.use(express.static(path.join(__dirname, '../src/')));
 app.use(history());
 
 app.listen(port, function onStart(err) {
