@@ -5,6 +5,7 @@ var HtmlWebpackPlugin = require('html-webpack-plugin')
 var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 var ExtractTextPlugin = require("extract-text-webpack-plugin")
 var HtmlWebpackInlineAssetsPlugin = require('html-webpack-inline-assets-plugin')
+var BundleBuddyWebpackPlugin = require("bundle-buddy-webpack-plugin")
 
 var isPro = process.env.NODE_ENV === 'production'
 
@@ -99,8 +100,9 @@ var baseConfig = {
             filename: 'static/css/[name].[contenthash].css',
             allChunks: true,
             disable: isPro ? false : true
-        }),
-        new BundleAnalyzerPlugin()
+        })
+        // new BundleAnalyzerPlugin()
+        // new BundleBuddyWebpackPlugin()
         // new Webpack.optimize.ModuleConcatenationPlugin()
     ]
 }
