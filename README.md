@@ -1,4 +1,7 @@
 # wdemo
+
+![wdemo-travis-ci](https://travis-ci.org/shaodahong/wdemo.svg?branch=master)
+
 This template can help you quickly start a webpack project
 
 ## What to use it for?
