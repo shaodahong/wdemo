@@ -124,13 +124,12 @@ function getEntries(globPath) {
         entries[name] = filepath;
     });
 
+    entries['index'] = './src/index.js'
     return entries;
 }
 
 var entries = getEntries('./src/pages/*/index.js');
 var hot = 'webpack-hot-middleware/client?reload=true';
-
-entries['index'] = './src/index.js'
 
 console.log('  entries', entries)
 
