@@ -27,11 +27,7 @@ var baseConfig = {
             test: /\.js$/,
             exclude: /(node_modules)/,
             use: {
-                loader: 'babel-loader',
-                options: {
-                    presets: ['es2015'],
-                    plugins: ['transform-runtime']
-                }
+                loader: 'babel-loader'
             },
         }, {
             test: /\.css$/,
@@ -61,7 +57,7 @@ var baseConfig = {
                 ]
             }),
         }, {
-            test: /\.scss/,
+            test: /\.(scss|sass)/,
             use: ExtractTextPlugin.extract({
                 fallback: 'style-loader',
                 use: [
